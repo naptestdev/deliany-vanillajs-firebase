@@ -1,0 +1,240 @@
+<div class="navbar">
+  <div class="container-sm">
+    <a href="./#">
+      <h1>Deliany</h1>
+    </a>
+    <div id="navbar-links"></div>
+  </div>
+</div>
+
+<div class="banner">
+  <div class="container-sm" id="banner-content">
+    <div>
+      <p style="font-size: 16px">Starting at $274.00</p>
+      <h2>
+        Enjoy your favorite food at your favorite place within 30 minutes!
+      </h2>
+      <p
+        style="
+          font-family: 'Oregano', cursive;
+          font-size: 30px;
+          margin-top: 10px;
+        "
+      >
+        Exclusive offer
+        <span style="color: #f8d65a; font-family: 'Oregano', cursive"
+          >-35%</span
+        >
+        off this week
+      </p>
+      <button class="shop-now-btn">
+        Shop Now <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+    <div>
+      <img src="./assets/christmas.svg" alt="" />
+    </div>
+  </div>
+</div>
+
+<div class="main-content">
+  <div class="container-sm" id="products"></div>
+</div>
+
+<div class="newsletter">
+  <img class="shape-1" src="./assets/newsletter/subscribe-shape-1.png" alt="" />
+  <img class="shape-2" src="./assets/newsletter/subscribe-shape-2.png" alt="" />
+  <img class="shape-3" src="./assets/newsletter/subscribe-shape-3.png" alt="" />
+  <div class="plane-container">
+    <img class="plane" src="./assets/newsletter/plane.png" alt="" />
+    <svg
+      class="plane-path"
+      width="399"
+      height="110"
+      viewBox="0 0 399 110"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M0.499634 1.00049C8.5 20.0005 54.2733 13.6435 60.5 40.0005C65.6128 61.6426 26.4546 130.331 15 90.0005C-9 5.5 176.5 127.5 218.5 106.5C301.051 65.2247 202 -57.9188 344.5 40.0003C364 53.3997 384 22 399 22"
+        stroke="white"
+        stroke-opacity="0.5"
+        stroke-dasharray="3 3"
+      ></path>
+    </svg>
+  </div>
+
+  <div class="subscribe-container">
+    <div class="left">
+      <p>Sale 20% of all store</p>
+      <h5>Subscribe our Newsletter</h5>
+    </div>
+    <div class="right">
+      <input type="text" placeholder="Enter Your Email" />
+      <button>Subscribe</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>
+    <div>
+      <h1>Deliany</h1>
+      <p>
+        We are a team of designers and developers that create high quality
+        Website
+      </p>
+      <div class="contacts">
+        <i class="fa-brands fa-facebook-f"></i>
+        <i class="fa-brands fa-twitter"></i>
+        <i class="fa-brands fa-linkedin-in"></i>
+        <i class="fa-brands fa-vimeo-v"></i>
+      </div>
+    </div>
+    <div>
+      <h6>My Account</h6>
+      <ul>
+        <li><a href="">Track Orders</a></li>
+        <li><a href="">Shipping</a></li>
+        <li><a href="">Wishlist</a></li>
+        <li><a href="">My Account</a></li>
+        <li><a href="">Order History</a></li>
+        <li><a href="">Returns</a></li>
+      </ul>
+    </div>
+    <div>
+      <h6>Information</h6>
+      <ul>
+        <li><a href="">Our Story</a></li>
+        <li><a href="">Careers</a></li>
+        <li><a href="">Privacy Policy</a></li>
+        <li><a href="">Terms & Conditions</a></li>
+        <li><a href="">Latest News</a></li>
+        <li><a href="">Contact Us</a></li>
+      </ul>
+    </div>
+    <div>
+      <h6>Talk To Us</h6>
+      <p>Got Questions? Call us</p>
+      <p class="phone">+123 456 789</p>
+      <p><i class="fa-regular fa-envelope"></i> support@christmasgifts.com</p>
+      <p><i class="fa-solid fa-location-dot"></i> Hanoi / HCM, VN</p>
+    </div>
+  </div>
+  <section>
+    <p>© 2023 All Rights Reserved</p>
+    <img src="./assets/payment-option.png" alt="" />
+  </section>
+</footer>
+
+<script type="module">
+  import { products, categories } from "./scripts/data.js";
+  import {
+    collection,
+    getDoc,
+    doc,
+    setDoc,
+    updateDoc,
+    increment,
+  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+  import { db, auth } from "./scripts/firebase.js";
+  import { signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+  window.addToCart = async (productId) => {
+    if (!auth.currentUser) {
+      alert("Please login");
+      return;
+    }
+
+    const docRef = doc(db, `cart-${auth.currentUser.uid}`, `${productId}`);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      updateDoc(docRef, {
+        quantity: increment(1),
+      });
+    } else {
+      setDoc(docRef, {
+        ...products.find((item) => item.id === productId),
+        quantity: 1,
+      });
+    }
+  };
+
+  for (let product of products) {
+    let card = /*html*/ `
+    <div onclick="location.href='#/product/${product.id}'" class="card">
+      <div class="image-container">
+        <img src="./assets/products/${product.image}" /> 
+        <div class="card-actions">
+          <button onclick="event.stopPropagation();addToCart('${
+            product.id
+          }');alert('Added to cart')" data-tooltip="Add to cart">
+            <i class="fa-solid fa-cart-shopping"></i>
+          </button>
+
+          <!-- 
+          <button onclick="event.stopPropagation();location.href='#/product/${
+            product.id
+          }'" data-tooltip="Quick view"><i class="fa-regular fa-eye"></i></button>
+          -->
+        </div>
+      </div> 
+      <div class="container">
+        <p>${
+          categories.find((category) => product.category === category.id).name
+        }</p>
+        <h5>${product.name}</h5> 
+        <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i></div>
+        <h6><span>${product.oldPrice}</span> <span>${
+      product.newPrice
+    }</span></h6>
+      </div>
+    </div>
+    `;
+
+    document.getElementById("products").innerHTML += card;
+  }
+</script>
+
+<script type="module">
+  import { db, auth, subscriptions } from "./scripts/firebase.js";
+  import { signOut } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-auth.js";
+  import {
+    collection,
+    onSnapshot,
+  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+  window.handleSignOut = () => {
+    signOut(auth);
+  };
+
+  if (auth.currentUser) {
+    document.querySelector("#navbar-links").innerHTML = /*html*/ `
+        <a href="#/cart">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span id="cart-count"></span>
+        </a>
+        <img class="navbar-avatar" src="${auth.currentUser.photoURL}" alt="" />
+        <button onclick="handleSignOut()" class="btn btn-danger">Logout</button>
+      `;
+
+    const unsub = onSnapshot(
+      collection(db, `cart-${auth.currentUser.uid}`),
+      (snapshot) => {
+        const items = [];
+        snapshot.forEach((doc) => {
+          items.push({ ...doc.data(), id: doc.id });
+        });
+        document.querySelector("#cart-count").innerText = items.length;
+      }
+    );
+
+    subscriptions.push(unsub);
+  } else {
+    document.querySelector("#navbar-links").innerHTML = /*html*/ `
+        <a href="#/login" class="btn btn-success">Login</a>
+        <a href="#/register" class="btn btn-primary">Register</a>
+      `;
+  }
+</script>

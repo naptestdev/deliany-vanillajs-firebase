@@ -131,7 +131,6 @@ a:hover {
 }
 
 #products .card {
-  cursor: pointer;
   transition: 0.3s;
   display: flex;
   flex-direction: column;
